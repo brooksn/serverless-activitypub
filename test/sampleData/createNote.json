@@ -1,0 +1,22 @@
+{
+  "@context": "https://www.w3.org/ns/activitystreams",
+  "type": "Create",
+  "id": "https://example.net/~mallory/87374",
+  "actor": "https://example.net/~mallory",
+  "object": {
+    "id": "https://example.com/~mallory/note/72",
+    "type": "Note",
+    "attributedTo": "https://example.net/~mallory",
+    "content": "This is a note",
+    "published": "2015-02-10T15:04:55Z",
+    "to": ["https://example.org/~john/", "https://example.org/~joe/", "https://example.org/~mary/", "https://example.org/~dorothy/"],
+    "cc": ["https://test.org/~john/", "https://test.org/~joe/", "https://test.org/~mary/", "https://test.org/~dorothy/"],
+    "bcc": ["https://bcc.org/~john/", "https://bcc.org/~joe/", "https://bcc.org/~mary/", "https://bcc.org/~dorothy/"],
+    "audience": "https://www.w3.org/ns/activitystreams#Public"
+  },
+  "published": "2015-02-10T15:04:55Z",
+  "to": ["https://example.org/~john/", "https://example.org/~joe/", "https://example.org/~mary/", "https://example.org/~dorothy/"],
+  "cc": ["https://test.org/~john/", "https://test.org/~joe/", "https://test.org/~mary/", "https://test.org/~dorothy/"],
+  "bcc": ["https://bcc.org/~john/", "https://bcc.org/~joe/", "https://bcc.org/~mary/", "https://bcc.org/~dorothy/"],
+  "audience": "https://www.w3.org/ns/activitystreams#Public"
+}

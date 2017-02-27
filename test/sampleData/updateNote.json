@@ -1,0 +1,20 @@
+{
+  "@context": "https://www.w3.org/ns/activitystreams",
+  "type": "Update",
+  "id": "https://example.net/~mallory/87375",
+  "actor": "https://example.net/~mallory",
+  "object": {
+    "id": "https://example.com/~mallory/note/72",
+    "type": "Note",
+    "attributedTo": "https://example.net/~mallory",
+    "content": "This is an updated note.",
+    "published": "2016-02-10T15:04:55Z",
+    "to": ["https://example.org/~john/", "https://example.org/~joe/", "https://example.org/~mary/", "https://example.org/~dorothy/"],
+    "cc": ["https://test.org/~john/", "https://test.org/~joe/", "https://test.org/~mary/", "https://test.org/~dorothy/"],
+    "audience": "https://www.w3.org/ns/activitystreams#Public"
+  },
+  "published": "2016-02-10T15:04:55Z",
+  "to": ["https://example.org/~john/", "https://example.org/~joe/", "https://example.org/~mary/", "https://example.org/~dorothy/"],
+  "cc": ["https://test.org/~john/", "https://test.org/~joe/", "https://test.org/~mary/", "https://test.org/~dorothy/"],
+  "audience": "https://www.w3.org/ns/activitystreams#Public"
+}

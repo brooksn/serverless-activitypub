@@ -1,0 +1,119 @@
+{
+  "title": "activity",
+  "description": "An activitypub activity",
+  "id": "http://brooks.is/schema/activitystreams/activity",
+  "type": "object",
+  "definitions": {
+    "objectRef": {
+      "type": "number"
+    },
+    "objectMod": {
+      "type": "object",
+      "properties": {
+        "id": {
+          "type": "string",
+          "format": "uri"
+        }
+      },
+      "required": ["id"]
+    },
+    "objectCreate": {
+      "type": "object",
+      "properties": {
+        "id": {
+          "disallow": "any"
+        }
+      }
+    }
+  },
+  "properties": {
+    "actor": {
+      "type": "string"
+    },
+    "@context": {
+      "$ref": "http://brooks.is/schema/activitystreams/object#/definitions/@context"
+    },
+    "type": {
+      "enum": ["Create", "Update", "Delete", "Add", "Follow", "Remove", "Like", "Block", "Undo"]
+    }
+  },
+  "switch": [{
+      "if": {
+        "properties": {
+          "type": {
+            "constant": "Update"
+          }
+        }
+      },
+      "then": {
+        "properties": {
+          "object": {
+            "type": "object",
+            "properties": {
+              "id": {
+                "type": "string",
+                "format": "uri"
+              }
+            }
+          }
+        }
+      }
+    },
+    {
+      "if": {
+        "properties": {
+          "type": {
+            "oneOf": [{
+              "constant": "Create"
+            }, {
+              "constant": "Add"
+            }]
+          }
+        }
+      },
+      "then": {
+        "properties": {
+          "object": {
+            "type": "object"
+          }
+        }
+      }
+    },
+    {
+      "if": {
+        "properties": {
+          "type": {
+            "oneOf": [{
+                "constant": "Delete"
+              },
+              {
+                "constant": "Follow"
+              },
+              {
+                "constant": "Remove"
+              },
+              {
+                "constant": "Like"
+              },
+              {
+                "constant": "Block"
+              },
+              {
+                "constant": "Undo"
+              }
+            ]
+          }
+        }
+      },
+      "then": {
+        "properties": {
+          "object": {
+            "type": "string",
+            "format": "uri"
+          }
+        }
+      }
+    }
+  ],
+  "required": ["@context"]
+}

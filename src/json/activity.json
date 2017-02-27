@@ -1,0 +1,18 @@
+{
+  "title": "Activity",
+  "type": "object",
+  "definitions": {
+    "jsonldcontext": {
+      "type": "object",
+      "properties": {
+        "foo": {"type": "string"}
+      },
+      "required": ["foo"]
+    }
+  },
+  "properties": {
+    "@context": {"type": ["#/definitions/jsonldcontext", "string"]},
+    "id": {"type": "string"}
+  },
+  "required": ["@context", "id"]
+}

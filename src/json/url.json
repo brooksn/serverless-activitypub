@@ -1,0 +1,7 @@
+{
+  "title": "url",
+  "description": "regex to match a URL string. Pattern by @stephenhay",
+  "id": "http://brooks.is/schema/url",
+  "type": "string",
+  "format": "uri"
+}

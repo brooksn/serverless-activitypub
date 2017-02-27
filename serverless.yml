@@ -1,0 +1,305 @@
+service: serverless-activitypub
+frameworkVersion: "^1.6.1"
+
+plugins:
+  - serverless-offline
+  - serverless-webpack
+custom:
+  webpackIncludeModules: true
+provider:
+  name: aws
+  runtime: nodejs4.3
+  stage: dev
+  memorySize: 512
+  region: us-east-1
+  environment:
+    JWT_SECRET: ${env:JWT_SECRET}
+    API_BASE: ${env:API_BASE}
+  iamRoleStatements:
+    - Effect: Allow
+      Action:
+        - "dynamodb:DescribeTable"
+        - "dynamodb:DeleteItem"
+        - "dynamodb:GetItem"
+        - "dynamodb:PutItem"
+        - "dynamodb:Query"
+        - "dynamodb:UpdateItem"
+      Resource: arn:aws:dynamodb:*:*:table/${self:service}-*
+package:
+  include:
+    - serverlessLambda.json
+    - serverless.yml
+    - .env.example
+
+functions:
+  hello:
+    handler: src/lambdaFunctions/handler.hello
+    environment:
+      QUEUE_WORKER_NAME: ${self:service}-${self:provider.stage}-queueWorker
+    events:
+      - http:
+          path: hello
+          method: get
+      - http:
+          path: hello
+          method: post
+  actorOPTIONS:
+    handler: src/lambdaFunctions/cors.options
+    events:
+      - http:
+          path: /{actor_username}
+          method: options
+  actorGET:
+    handler: src/lambdaFunctions/actor.get
+    timeout: 10
+    events:
+      - http:
+          path: /{actor_username}
+          method: get
+  loginOPTIONS:
+    handler: src/lambdaFunctions/cors.options
+    events:
+      - http:
+          path: login
+          method: options
+  loginGET:
+    handler: src/lambdaFunctions/login.get
+    timeout: 10
+    events:
+      - http:
+          path: login
+          method: get
+  loginPOST:
+    handler: src/lambdaFunctions/login.post
+    timeout: 15
+    events:
+      - http:
+          path: login
+          method: post
+  authorizeOPTIONS:
+    handler: src/lambdaFunctions/cors.options
+    events:
+      - http:
+          path: authorize/{username}
+          method: options
+  authorizeGET:
+    handler: src/lambdaFunctions/authorize.get
+    timeout: 10
+    events:
+      - http:
+          path: authorize/{username}
+          method: get
+  authorizePOST:
+    handler: src/lambdaFunctions/authorize.post
+    timeout: 25
+    events:
+      - http:
+          path: authorize/{username}
+          method: post
+  inboxOPTIONS:
+    handler: src/lambdaFunctions/cors.options
+    events:
+      - http:
+          path: inbox/{username}
+          method: options
+  inboxPOST:
+    handler: src/lambdaFunctions/inbox.post
+    timeout: 15
+    events:
+      - http:
+          path: inbox/{username}
+          method: post
+  inboxGET:
+    handler: src/lambdaFunctions/inbox.get
+    timeout: 15
+    events:
+      - http:
+          path: inbox/{username}
+          method: get
+  outboxOPTIONS:
+    handler: src/lambdaFunctions/cors.options
+    events:
+      - http:
+          path: outbox/{username}
+          method: options
+  outboxPOST:
+    handler: src/lambdaFunctions/outbox.post
+    timeout: 15
+    events:
+      - http:
+          path: outbox/{username}
+          method: post
+  outboxGET:
+    handler: src/lambdaFunctions/outbox.get
+    timeout: 15
+    events:
+      - http:
+          path: outbox/{username}
+          method: get
+  followingOPTIONS:
+    handler: src/lambdaFunctions/cors.options
+    events:
+      - http:
+          path: following/{username}
+          method: options
+  followingGET:
+    handler: src/lambdaFunctions/outbox.get
+    timeout: 15
+    events:
+      - http:
+          path: following/{username}
+          method: get
+  followersOPTIONS:
+    handler: src/lambdaFunctions/cors.options
+    events:
+      - http:
+          path: followers/{username}
+          method: options
+  followersGET:
+    handler: src/lambdaFunctions/outbox.get
+    timeout: 15
+    events:
+      - http:
+          path: followers/{username}
+          method: get
+  likesOPTIONS:
+    handler: src/lambdaFunctions/cors.options
+    events:
+      - http:
+          path: likes/{username}
+          method: options
+  likesGET:
+    handler: src/lambdaFunctions/outbox.get
+    timeout: 15
+    events:
+      - http:
+          path: likes/{username}
+          method: get
+  objectOPTIONS:
+    handler: src/lambdaFunctions/cors.options
+    events:
+      - http:
+          path: object/{objectID}
+          method: options
+  objectGET:
+    handler: src/lambdaFunctions/object.get
+    timeout: 10
+    events:
+      - http:
+          path: object/{objectID}
+          method: get
+  queueWorker:
+    handler: src/lambdaFunctions/queueWorker.handler
+    timeout: 200
+  queueConsumer:
+    handler: src/lambdaFunctions/queueConsumer.handler
+    timeout: 10
+    environment:
+      QUEUE_WORKER_NAME: ${self:service}-${self:provider.stage}-queueWorker
+
+resources:
+  Resources:
+    FileBucket:
+      Type: AWS::S3::Bucket
+      Properties:
+        BucketName: ${self:service}-user-files
+    FailedOutgoingNotifications:
+      Type: AWS::SQS::Queue
+      Properties:
+        QueueName: ${self:service}-failed-outgoing-notifications
+        DelaySeconds: 300
+    OutgoingNotifications:
+      Type: AWS::SQS::Queue
+      Properties:
+        QueueName: ${self:service}-outgoing-notifications
+        RedrivePolicy:
+          deadLetterTargetArn:
+            Fn::GetAtt:
+            - FailedOutgoingNotifications
+            - Arn
+          maxReceiveCount: 3
+    UsersTable:
+      Type: AWS::DynamoDB::Table
+      Properties:
+        AttributeDefinitions:
+        - AttributeName: username
+          AttributeType: S
+        KeySchema:
+        - AttributeName: username
+          KeyType: HASH
+        ProvisionedThroughput:
+          ReadCapacityUnits: 1
+          WriteCapacityUnits: 1
+        TableName: ${self:service}-Users
+    Posts:
+      Type: AWS::DynamoDB::Table
+      Properties:
+        ProvisionedThroughput:
+          ReadCapacityUnits: 2
+          WriteCapacityUnits: 2
+        TableName: ${self:service}-Posts
+        AttributeDefinitions:
+        - AttributeName: username
+          AttributeType: S
+        - AttributeName: global_object_id
+          AttributeType: S
+        - AttributeName: modified
+          AttributeType: S
+        - AttributeName: join_collection_modified
+          AttributeType: S
+        - AttributeName: join_username_modified
+          AttributeType: S
+        - AttributeName: join_endpoint_modified
+          AttributeType: S
+        - AttributeName: actor_url
+          AttributeType: S        
+        KeySchema:
+        - AttributeName: global_object_id
+          KeyType: HASH
+        - AttributeName: join_username_modified
+          KeyType: RANGE
+        GlobalSecondaryIndexes:
+          - IndexName: user_collections_GSI
+            ProvisionedThroughput:
+              ReadCapacityUnits: 2
+              WriteCapacityUnits: 1
+            Projection:
+              ProjectionType: ALL
+            KeySchema:
+              - AttributeName: username
+                KeyType: HASH
+              - AttributeName: join_collection_modified
+                KeyType: RANGE
+          - IndexName: user_endpoints_GSI
+            ProvisionedThroughput:
+              ReadCapacityUnits: 2
+              WriteCapacityUnits: 1
+            Projection:
+              ProjectionType: ALL
+            KeySchema:
+              - AttributeName: username
+                KeyType: HASH
+              - AttributeName: join_endpoint_modified
+                KeyType: RANGE
+          - IndexName: user_posts_GSI
+            ProvisionedThroughput:
+              ReadCapacityUnits: 2
+              WriteCapacityUnits: 1
+            Projection:
+              ProjectionType: ALL
+            KeySchema:
+              - AttributeName: username
+                KeyType: HASH
+              - AttributeName: modified
+                KeyType: RANGE
+          - IndexName: actor_posts_GSI
+            ProvisionedThroughput:
+              ReadCapacityUnits: 1
+              WriteCapacityUnits: 1
+            Projection:
+              ProjectionType: ALL
+            KeySchema:
+              - AttributeName: actor_url
+                KeyType: HASH
+              - AttributeName: join_username_modified
+                KeyType: RANGE

@@ -1,0 +1,30 @@
+{
+  "title": "object",
+  "description": "An activitypub object",
+  "id": "http://brooks.is/schema/activitystreams/object",
+  "type": "object",
+  "definitions": {
+    "@context": {
+      "oneOf": [
+        {
+          "type": "string",
+          "enum": ["https://www.w3.org/ns/activitystreams"]
+        },
+        {
+          "type": "array",
+          "items": [
+            {
+              "type": "string",
+              "enum": ["https://www.w3.org/ns/activitystreams"]
+            }
+          ],
+          "additionalItems": true
+        }
+      ]
+    }
+  },
+  "properties": {
+    "@context": {"$ref": "#/definitions/@context"}
+  },
+  "required": ["@context"]
+}

@@ -1,0 +1,15 @@
+node_modules
+npm-debug.log
+.env
+node_modules
+.DS_STORE
+.serverless
+src/test.js
+src/test.html
+test.js
+test.html
+dynamodb_local
+coverage
+*.db
+dist
+.git

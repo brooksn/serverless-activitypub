@@ -1,0 +1,65 @@
+{
+  "title": "actor",
+  "description": "An activitypub actor object",
+  "id": "http://brooks.is/schema/activitystreams/actor",
+  "type": "object",
+  "definitions": {
+    "uri": {
+      "type": "string",
+      "format": "uri"
+    },
+    "langTuple": {
+      "oneOf": [
+        {"type": "string"},
+        {
+          "type": "object",
+          "properties": {
+            "@language": {"type": "string"},
+            "@value": {"type": "string"}
+          },
+          "required": ["@language", "@value"],
+          "additionalProperties":false
+        }
+      ]
+    }
+  },
+  "properties": {
+    "@context": {"$ref": "http://brooks.is/schema/activitystreams/object#/definitions/@context"},
+    "type": {
+      "type": "string",
+      "enum": ["Person", "Application", "Group", "Organization", "Service"]
+    },
+    "id": {"type": "string"},
+    "name": {"$ref": "#/definitions/langTuple"},
+    "nameMap": {"type": "object"},
+    "summary": {"$ref": "#/definitions/langTuple"},
+    "summaryMap": {"type": "object"},
+    "url": {"$ref": "#/definitions/uri"},
+    "inbox": {"$ref": "#/definitions/uri"},
+    "outbox": {"$ref": "#/definitions/uri"},
+    "following": {"$ref": "#/definitions/uri"},
+    "followers": {"$ref": "#/definitions/uri"},
+    "likes": {"$ref": "#/definitions/uri"},
+    "icon": {
+      "oneOf": [
+        {"$ref": "#/definitions/uri"},
+        {
+          "type": "array",
+          "items": [{"$ref": "#/definitions/uri"}]
+        }
+      ]
+    },
+    "preferredUsername": {"type": "string"},
+    "uploadMedia": {"$ref": "#/definitions/uri"},
+    "proxyUrl": {"$ref": "#/definitions/uri"},
+    "oauthClientAuthorize": {"$ref": "#/definitions/uri"},
+    "provideClientKey": {"$ref": "#/definitions/uri"},
+    "signClientKey": {"$ref": "#/definitions/uri"},
+    "publicInbox": {"$ref": "#/definitions/uri"},
+    "streams": {"type": "array"}
+  },
+  "oneOf": [
+    {"required": ["@context", "type", "id", "inbox", "outbox", "following", "followers", "likes", "name"]},
+    {"required": ["@context", "type", "id", "inbox", "outbox", "following", "followers", "likes", "nameMap"]}
+  ]
+}

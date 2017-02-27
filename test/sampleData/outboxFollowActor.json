@@ -1,0 +1,7 @@
+{
+  "@context": "https://www.w3.org/ns/activitystreams",
+  "summary": "Brooks followed John",
+  "type": "Follow",
+  "actor": "https://example.com/me",
+  "object": "https://example.com/john"
+}

@@ -1,0 +1,13 @@
+sudo: false
+
+language: node_js
+
+node_js:
+  - 7
+
+env:
+  global:
+    - AWS_REGION=us-east-1
+before_script:
+  - mkdir dynamodb_local
+  - curl https://s3-us-west-2.amazonaws.com/dynamodb-local/dynamodb_local_latest.tar.gz | tar xz -C dynamodb_local
