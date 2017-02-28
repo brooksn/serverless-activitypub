@@ -1,3 +1,4 @@
+'use strict'
 module.exports = function promiseAny(promises) {
   const P = new Promise((resolve, reject) => {
     const numberOfPromises = promises.length

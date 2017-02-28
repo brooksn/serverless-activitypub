@@ -1,3 +1,4 @@
+'use strict'
 //const activitystreams = require('../json/contexts/activitystreams.json')
 
 module.exports.prefix = function prefix(object, contextUrl) {
